@@ -4,8 +4,8 @@ from tensorflow.python.keras.applications.vgg19 import VGG19
 
 from model.common import pixel_shuffle, normalize_01, normalize_m11, denormalize_m11
 
-LR_SIZE = 24
-HR_SIZE = 96
+LR_SIZE = 128
+HR_SIZE = 256
 
 
 def upsample(x_in, num_filters):
@@ -25,7 +25,7 @@ def res_block(x_in, num_filters, momentum=0.8):
 
 
 def sr_resnet(num_filters=64, num_res_blocks=16):
-    x_in = Input(shape=(None, None, 3))
+    x_in = Input(shape=(None, None, 1))
     x = Lambda(normalize_01)(x_in)
 
     x = Conv2D(num_filters, kernel_size=9, padding='same')(x)
@@ -41,7 +41,7 @@ def sr_resnet(num_filters=64, num_res_blocks=16):
     x = upsample(x, num_filters * 4)
     x = upsample(x, num_filters * 4)
 
-    x = Conv2D(3, kernel_size=9, padding='same', activation='tanh')(x)
+    x = Conv2D(1, kernel_size=9, padding='same', activation='tanh')(x)
     x = Lambda(denormalize_m11)(x)
 
     return Model(x_in, x)
@@ -58,7 +58,7 @@ def discriminator_block(x_in, num_filters, strides=1, batchnorm=True, momentum=0
 
 
 def discriminator(num_filters=64):
-    x_in = Input(shape=(HR_SIZE, HR_SIZE, 3))
+    x_in = Input(shape=(HR_SIZE, HR_SIZE, 1))
     x = Lambda(normalize_m11)(x_in)
 
     x = discriminator_block(x, num_filters, batchnorm=False)
@@ -91,5 +91,5 @@ def vgg_54():
 
 
 def _vgg(output_layer):
-    vgg = VGG19(input_shape=(None, None, 3), include_top=False)
+    vgg = VGG19(input_shape=(None, None, 1), include_top=False)
     return Model(vgg.input, vgg.layers[output_layer].output)

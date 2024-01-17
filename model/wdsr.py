@@ -15,7 +15,7 @@ def wdsr_b(scale, num_filters=32, num_res_blocks=8, res_block_expansion=6, res_b
 
 
 def wdsr(scale, num_filters, num_res_blocks, res_block_expansion, res_block_scaling, res_block):
-    x_in = Input(shape=(None, None, 3))
+    x_in = Input(shape=(None, None, 1))
     x = Lambda(normalize)(x_in)
 
     # main branch
@@ -30,6 +30,7 @@ def wdsr(scale, num_filters, num_res_blocks, res_block_expansion, res_block_scal
     s = Lambda(pixel_shuffle(scale))(s)
 
     x = Add()([m, s])
+    x = Conv2D(1, 1, padding='same')(x)  # Nova linha para mudar o output para (none, none, 1)
     x = Lambda(denormalize)(x)
 
     return Model(x_in, x, name="wdsr")
