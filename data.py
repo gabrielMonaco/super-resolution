@@ -9,7 +9,7 @@ class DIV2K:
                  scale=2,
                  subset='train',
                  #downgrade=None, ### modifiquei de bicubic para None
-                 images_dir='C:\\Users\\bielm\\Documents\\Mestrado\\0_SuperResolucao\\Dados_SR\\',
+                 images_dir='C:\\Users\\bielm\\Documents\\Mestrado\\0_SuperResolucao\\Dados_SR',
                  caches_dir='C:\\Users\\bielm\\Documents\\Mestrado\\0_SuperResolucao\\super-resolution\\super-resolution\\cache\\'):
 
         self._ntire_2018 = False ### de True para False
@@ -241,7 +241,7 @@ class DIV2K:
         """
         ds = tf.data.Dataset.from_tensor_slices(image_files)
         ds = ds.map(tf.io.read_file)
-        ds = ds.map(lambda x: tf.image.decode_png(x, channels=1), num_parallel_calls=AUTOTUNE) #### 
+        ds = ds.map(lambda x: tf.image.decode_png(x, channels=3), num_parallel_calls=AUTOTUNE) #### 
         return ds
 
     @staticmethod
